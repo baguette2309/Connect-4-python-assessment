@@ -1,10 +1,11 @@
 import socket
 from _thread import *
+import pickle
 
 class Network:
     def __init__(self):
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server = "INSERT_IP"
+        self.server = "192.168.198.13"
         self.port = 5555
         self.addr = (self.server, self.port)
         self.id = self.connect()
@@ -19,22 +20,21 @@ class Network:
     
     def send(self, data):
         try:
-            self.client.send(str.encode(data))
-            #return self.client.recv(2048).decode()
+            self.client.send(pickle.dumps(data))
         except socket.error as e:
             print(e)
     
     def recieve_server(self):
         while True:
             data = self.client.recv(2048)
-            print(f"recieve: {data.decode()}")
+            print(f"recieve: {pickle.loads(data)}")
 
 n = Network()
 while True:
     item = input("Send to server: ")
     if item == "":
         continue
-    print(f"Recieved from server: {n.send(item)}")
+    n.send(item)
 
     if item == "break":
         break
